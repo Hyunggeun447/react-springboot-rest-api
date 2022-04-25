@@ -96,7 +96,7 @@ public class ProductJdbcRepository implements ProductRepository {
         HashMap<String, Object> paramMap = new HashMap<>();
         paramMap.put("productId", product.getProductId().toString().getBytes());
         paramMap.put("productName", product.getProductName());
-        paramMap.put("category", product.getCategory());
+        paramMap.put("category", product.getCategory().toString());
         paramMap.put("price", product.getPrice());
         paramMap.put("description", product.getDescription());
         paramMap.put("createdAt", product.getCreatedAt());

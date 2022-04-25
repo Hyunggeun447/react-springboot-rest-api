@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.wix.mysql.distribution.Version.*;
@@ -23,22 +24,24 @@ import static com.wix.mysql.config.MysqldConfig.*;
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProductJdbcRepositoryTest {
 
     static EmbeddedMysql embeddedMysql;
 
     @BeforeAll
     static void setup() {
-        MysqldConfig config = aMysqldConfig(v8_0_11)
+        var config = aMysqldConfig(v8_0_11)
                 .withCharset(Charset.UTF8)
                 .withPort(2215)
                 .withUser("test", "test1234!")
                 .withTimeZone("Asia/Seoul")
                 .build();
         embeddedMysql = anEmbeddedMysql(config)
-                .addSchema("test-order_mgmt", ScriptResolver.classPathScripts("schema.sql"))
+                .addSchema("test-order_mgmt", ScriptResolver.classPathScript("schema.sql"))
                 .start();
     }
+
 
     @AfterAll
     static void cleanup() {
@@ -54,9 +57,32 @@ class ProductJdbcRepositoryTest {
     @Order(1)
     @DisplayName("상품을 추가할 수 있다.")
     void testInsert() {
-        repository.findAll();
-//        repository.insert(newProduct);
-//        List<Product> all = repository.findAll();
-//        assertThat(all.isEmpty(), is(false));
+        repository.insert(newProduct);
+        List<Product> all = repository.findAll();
+        assertThat(all.isEmpty(), is(false));
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("상품을 이름으로 조회할 수 있다.")
+    void testFindByName() {
+        Optional<Product> product = repository.findByName(newProduct.getProductName());
+        assertThat(product.isEmpty(), is(false));
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("상품을 아이디로 조회할 수 있다.")
+    void testFindById() {
+        Optional<Product> product = repository.findById(newProduct.getProductId());
+        assertThat(product.isEmpty(), is(false));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("상품을 카테고리로 조회할 수 있다.")
+    void testFindByCategory() {
+        List<Product> products = repository.findByCategory(newProduct.getCategory());
+        assertThat(products.isEmpty(), is(false));
     }
 }
