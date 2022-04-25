@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="gc-coffee" target="11" />
+      <module name="gc-coffee" target="16" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
